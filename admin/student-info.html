@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Copy existing styles from admin-dashboard.html -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            transform: translateX(5px);
+            background-color: #1e3a8a;
+            color: white;
+        }
+        .logout-btn {
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            transform: translateX(5px);
+            background-color: #dc2626;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Sidebar -->
+    <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg">
+        <div class="flex flex-col h-full">
+            <!-- Logo/Brand -->
+            <div class="p-4 bg-gradient-to-r from-blue-900 to-blue-700">
+                <h1 class="text-xl font-bold text-white">Admin Portal</h1>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="admin-dashboard.html" 
+                           class="nav-link flex items-center p-3 text-gray-700 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="manage-students.html" 
+                           class="nav-link flex items-center p-3 text-gray-700 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            Manage Students
+                        </a>
+                    </li>
+                    <li>
+                        <a href="student-info.html" 
+                           class="nav-link flex items-center p-3 text-gray-700 rounded-lg bg-blue-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Student Information
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Logout Button -->
+            <div class="p-4 border-t">
+                <button id="logoutBtn" 
+                        class="logout-btn w-full flex items-center p-3 text-rose-600 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content p-8">
+        <h2 class="text-2xl font-bold text-slate-800">Student Personal Information</h2>
+        <p class="text-slate-600 mt-2 font-light">Create and manage student personal information.</p>
+
+        <div class="mt-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <!-- Student Search -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+                    <select id="studentSelect" class="w-full p-2 border rounded-md">
+                        <option value="">Select a student...</option>
+                    </select>
+                </div>
+
+                <!-- Personal Information Form -->
+                <form id="studentInfoForm" class="space-y-6">
+                    <input type="hidden" id="studentId" name="studentId">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Basic Information -->
+                        <div class="space-y-4">
+                            <h3 class="font-semibold text-gray-900">Basic Information</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                <input type="date" name="dob" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <input type="tel" name="phone" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Address</label>
+                                <textarea name="address" rows="3" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Academic Information -->
+                        <div class="space-y-4">
+                            <h3 class="font-semibold text-gray-900">Academic Information</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Course</label>
+                                <input type="text" name="course" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Batch Year</label>
+                                <input type="number" name="batch_year" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Current Semester</label>
+                                <input type="number" name="semester" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Save Information
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Success/Error Message -->
+                <div id="messageBox" class="mt-4 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>const { createClient } = supabase;</script>
+    <script src="../supabase.js"></script>
+    <script src="../logout.js"></script>
+    <script>
+        // Session Check
+        function checkSession() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!user || userRole !== 'admin') {
+                window.location.href = '../index.html';
+                return;
+            }
+        }
+
+        // Fetch Students for Dropdown
+        async function loadStudents() {
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('id, full_name, email');
+
+                if (error) throw error;
+
+                const select = document.getElementById('studentSelect');
+                data.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.full_name} (${student.email})`;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
+        }
+
+        // Handle Form Submission
+        document.getElementById('studentInfoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const studentId = document.getElementById('studentSelect').value;
+            if (!studentId) {
+                alert('Please select a student');
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            const studentInfo = {
+                student_id: studentId, // This is now a UUID
+                dob: formData.get('dob'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                course: formData.get('course'),
+                batch_year: parseInt(formData.get('batch_year')), // Convert to integer
+                semester: parseInt(formData.get('semester'))      // Convert to integer
+            };
+
+            try {
+                // First check if record exists
+                const { data: existingData } = await supabase
+                    .from('student_info')
+                    .select('id')
+                    .eq('student_id', studentId)
+                    .single();
+
+                let result;
+                if (existingData) {
+                    // Update existing record
+                    result = await supabase
+                        .from('student_info')
+                        .update(studentInfo)
+                        .eq('student_id', studentId)
+                        .select();
+                } else {
+                    // Insert new record
+                    result = await supabase
+                        .from('student_info')
+                        .insert([studentInfo])
+                        .select();
+                }
+
+                if (result.error) throw result.error;
+
+                showMessage('Student information saved successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error saving student info:', error);
+                showMessage('Error saving information: ' + error.message, 'error');
+            }
+        });
+
+        // Show Message Function
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = `mt-4 p-4 rounded-lg ${
+                type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            }`;
+            messageBox.classList.remove('hidden');
+            setTimeout(() => messageBox.classList.add('hidden'), 3000);
+        }
+
+        // Initialize
+        checkSession();
+        loadStudents();
+        setInterval(checkSession, 5000);
+    </script>
+</body>
+</html>

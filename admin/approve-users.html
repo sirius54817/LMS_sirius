@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Users - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Copy existing styles from admin-dashboard.html -->
+</head>
+<body class="bg-slate-50">
+    <!-- Copy sidebar structure from admin-dashboard.html -->
+    
+    <div class="main-content p-8">
+        <h2 class="text-2xl font-bold text-slate-800">Pending Approvals</h2>
+        
+        <div class="mt-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingUsersBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+    <script>
+        async function loadPendingApprovals() {
+            try {
+                const { data, error } = await supabase
+                    .from('pending_approvals')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const tbody = document.getElementById('pendingUsersBody');
+                tbody.innerHTML = '';
+
+                data.forEach(user => {
+                    const row = `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">${user.full_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${user.role}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                ${getPendingBadge(user.status)}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="approveUser('${user.id}', '${user.role}')" 
+                                        class="text-green-600 hover:text-green-900 mr-4">
+                                    Approve
+                                </button>
+                                <button onclick="declineUser('${user.id}')"
+                                        class="text-red-600 hover:text-red-900">
+                                    Decline
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function approveUser(id, role) {
+            try {
+                // Get user data from pending_approvals
+                const { data: userData, error: fetchError } = await supabase
+                    .from('pending_approvals')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                // Insert into appropriate table based on role
+                const table = role === 'student' ? 'students' : 'admins';
+                const { error: insertError } = await supabase
+                    .from(table)
+                    .insert([{
+                        full_name: userData.full_name,
+                        email: userData.email,
+                        password: userData.password
+                    }]);
+
+                if (insertError) throw insertError;
+
+                // Delete from pending_approvals
+                const { error: deleteError } = await supabase
+                    .from('pending_approvals')
+                    .delete()
+                    .eq('id', id);
+
+                if (deleteError) throw deleteError;
+
+                // Show success message
+                alert(`User ${userData.full_name} has been approved successfully!`);
+                
+                // Refresh the list
+                await loadPendingApprovals();
+
+            } catch (error) {
+                console.error('Error approving user:', error);
+                alert('Error approving user: ' + error.message);
+            }
+        }
+
+        async function declineUser(id) {
+            try {
+                await supabase
+                    .from('pending_approvals')
+                    .delete()
+                    .eq('id', id);
+
+                await loadPendingApprovals();
+
+            } catch (error) {
+                console.error('Error declining user:', error);
+                alert('Error declining user');
+            }
+        }
+
+        // Add status badges to the table rows
+        function getPendingBadge(status) {
+            return `
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    ${status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                    ${status}
+                </span>
+            `;
+        }
+
+        // Load pending approvals on page load
+        loadPendingApprovals();
+    </script>
+</body>
+</html>

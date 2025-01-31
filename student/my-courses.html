@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Courses - Student LMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Sidebar -->
+    <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg">
+        <div class="flex flex-col h-full">
+            <!-- Logo/Brand -->
+            <div class="p-4 bg-gradient-to-r from-blue-800 to-blue-600">
+                <h1 class="text-xl font-bold text-white">Student Portal</h1>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="student-dashboard.html" 
+                           class="flex items-center p-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="my-courses.html" 
+                           class="flex items-center p-3 text-gray-700 bg-blue-50 rounded-lg transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            My Courses
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Logout Button -->
+            <div class="p-4 border-t">
+                <button id="logoutBtn" 
+                        class="w-full flex items-center p-3 text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Content -->
+        <div class="p-8">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">My Courses</h2>
+            
+            <!-- Courses Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Course cards will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>const { createClient } = supabase;</script>
+    <script src="../supabase.js"></script>
+    <script src="../logout.js"></script>
+    <script>
+        // Check for valid session
+        function checkSession() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!user || userRole !== 'student') {
+                window.location.href = '../index.html';
+                return;
+            }
+        }
+
+        // Run check immediately
+        checkSession();
+
+        // Also check periodically
+        setInterval(checkSession, 5000);
+
+        // Load courses (to be implemented)
+        async function loadCourses() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            // Add code here to fetch and display enrolled courses
+        }
+
+        loadCourses();
+    </script>
+</body>
+</html>
